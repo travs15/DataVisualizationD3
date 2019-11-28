@@ -1,0 +1,88 @@
+{
+    "resultado": [
+        {
+            "cultivo": "Platano",
+            "produccion": 9184.5,
+            "rendimiento": 4.5,
+            "area_sembr": 2041,
+            "area_cosec": 2041
+        },
+        {
+            "cultivo": "Tomate De Arbol",
+            "produccion": 2500,
+            "rendimiento": 25,
+            "area_sembr": 100,
+            "area_cosec": 100
+        },
+        {
+            "cultivo": "Cacao",
+            "produccion": 2,
+            "rendimiento": 0.4,
+            "area_sembr": 5,
+            "area_cosec": 5
+        },
+        {
+            "cultivo": "Lulo",
+            "produccion": 125,
+            "rendimiento": 5,
+            "area_sembr": 25,
+            "area_cosec": 25
+        },
+        {
+            "cultivo": "Aguacate",
+            "produccion": 9044,
+            "rendimiento": 19,
+            "area_sembr": 556,
+            "area_cosec": 476
+        },
+        {
+            "cultivo": "Caña Panelera",
+            "produccion": 1182.5,
+            "rendimiento": 5.5,
+            "area_sembr": 220,
+            "area_cosec": 215
+        },
+        {
+            "cultivo": "Frijol",
+            "produccion": 305.87412587,
+            "rendimiento": 1.2744755244583332,
+            "area_sembr": 120,
+            "area_cosec": 240
+        },
+        {
+            "cultivo": "Maiz",
+            "produccion": 400,
+            "rendimiento": 2,
+            "area_sembr": 100,
+            "area_cosec": 200
+        },
+        {
+            "cultivo": "Mora",
+            "produccion": 48,
+            "rendimiento": 8,
+            "area_sembr": 6,
+            "area_cosec": 6
+        },
+        {
+            "cultivo": "Hortensia",
+            "produccion": 517.84615385,
+            "rendimiento": 4.2499999998974118,
+            "area_sembr": 132,
+            "area_cosec": 121.84615385
+        },
+        {
+            "cultivo": "Papa",
+            "produccion": 1580,
+            "rendimiento": 10,
+            "area_sembr": 80,
+            "area_cosec": 158
+        },
+        {
+            "cultivo": "Cafe",
+            "produccion": 4717.62823173,
+            "rendimiento": 1.8650585225935765,
+            "area_sembr": 3149.22,
+            "area_cosec": 2529.48
+        }
+    ]
+}
