@@ -12,23 +12,46 @@ function cargarDatos() {
         })
 }
 function creaGrafica() {
-    console.log("svg", d3.select("#graph"));
-    // let svg = d3.select("#graph");
-    // let width = +svg.attr("width");
-    // let height = +svg.attr("height");
+    // gamma de colores d3 https://github.com/d3/d3/blob/master/API.md#colors-d3-color
+    // const colores = d3.schemeTableau10;
+    let departamento = "Amazonas", year = "2008", municipio = "La chorrera";
+    const colores = d3.schemePaired;
+    console.log(colores);
+    // console.log("svg", d3.select("#graph"));
     let arrayNombres = data.map(d => d.cultivo);
+    var tamaño = arrayNombres.length;
     console.log("arrayNom", arrayNombres);
 
     // console.log("svg", d3.select("#graph"));
     let svg = d3.select("#graph");
-    var margin = { top: 40, right: 40, bottom: 30, left: 40 };
+    svg.attr("overflow", "visible");
+    var margin = { top: 30, right: 40, bottom: 30, left: 60 };
     var width = +svg.attr("width") - margin.left - margin.right;
     var height = +svg.attr("height") - margin.top - margin.bottom;
     var g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    // se colocan grupos para los ejes
+    // se coloca un grupo para el eje X
     g.append("g").attr("class", "xaxis");
+    // label para eje x
+    svg.append("g")
+        .append("text")
+        .attr("transform",
+            "translate(" + (width / 2) + " ," +
+            (height + margin.bottom + 30) + ")")
+        .style("text-anchor", "middle")
+        .text("Area Cosechada (ha)");
+
+    // se coloca un grupo para el eje Y
     g.append("g").attr("class", "yaxis");
+    // text label for the y axis
+    svg.append("g")
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0)
+        .attr("x", 0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Producción (t)");
 
     //se establece un rango para los ejes de acuerdo a los pixeles del svg
     var x = d3.scaleLinear()
@@ -44,28 +67,26 @@ function creaGrafica() {
     var Tooltip = d3.select("#grafica")
         .append("div")
         .style("opacity", 0)
-        .attr("class", "tooltip")
-        .style("background-color", "white")
-        .style("border", "solid")
-        .style("border-width", "2px")
-        .style("border-radius", "5px")
-        .style("padding", "5px");
+        .attr("class", "tooltip");
 
-    // Three function that change the tooltip when user hover / move / leave a cell
+    // Tres funciones que cambian el tooltip cuando el mouse hace hover, se mueve, y deja un circulo
     var mouseover = function (d) {
         Tooltip
             .style("opacity", 1);
         d3.select(this)
-            .style("stroke", "black")
+            .style("stroke", "gray")
             .style("opacity", 1);
     }
     var mousemove = function (d) {
         Tooltip
-            .html("<table>"+
-                    "<tr><th>Área Cosechada:</th>"+"<th>"+d.area_cosec+"</th></tr>"+
-                    "<tr><th>Producción:</th>"+"<th>"+d.produccion+"</th></tr>"+
-                    "<tr><th>Área Sembrada:</th>"+"<th>"+d.area_sembr+"</th></tr>"+
-                    "</table>")
+            .html("<p>"+departamento+" - "+municipio+ " - "+year+"</p>"+
+                "<table>" +
+                "<tr><th>Cultivo:</th>" + "<th>" + d.cultivo + "</th></tr>" +
+                "<tr><th>Área Cosechada:</th>" + "<th>" + d.area_cosec + " ha" + "</th></tr>" +
+                "<tr><th>Producción:</th>" + "<th>" + d.produccion + " t" + "</th></tr>" +
+                "<tr><th>Rendimiento:</th>" + "<th>" + d.rendimiento + " t/ha" + "</th></tr>" +
+                "<tr><th>Área Sembrada:</th>" + "<th>" + d.area_sembr + " ha" + "</th></tr>" +
+                "</table>")
             .style("left", (d3.mouse(this)[0] + 70) + "px")
             .style("top", (d3.mouse(this)[1]) + "px");
     }
@@ -74,7 +95,7 @@ function creaGrafica() {
             .style("opacity", 0);
         d3.select(this)
             .attr("stroke", "gray")
-            .attr("stroke-width", 2)
+            .attr("stroke-width", 1)
             .style("opacity", 0.8);
     }
 
@@ -94,10 +115,28 @@ function creaGrafica() {
     points.merge(pointsEnter) //enter + update
         .attr("cx", d => x(d.area_cosec)) // se devuelve eso en terminos del dominio
         .attr("cy", d => y(d.produccion)) //se devuelve en terminos del dominio
-        .attr("r", d => (d.area_sembr * 0.015))
+        .attr("r", d => (d.area_sembr * 0.022))
         // .attr("r", 10)
         .attr("stroke", "gray")
-        .attr("stroke-width", 2);
+        .attr("stroke-width", 1)
+        .attr("fill", function (d, i) {
+            // console.log("i",i);
+            // console.log("tamaño",tamaño);
+            //retorna un color del arreglo de colores dependiendo del indice de los datos,
+            let index;
+            if (i <= tamaño) {
+                index = i;
+                // console.log("normal");
+                return colores[index];
+            } else {
+                index = tamaño - i;
+                index = Math.abs(index);
+                // return d3.color.darker(colores[index]);
+                // console.log("oscuro")
+                return colores[index];
+            }
+
+        });
 
     points.exit().remove();
 
