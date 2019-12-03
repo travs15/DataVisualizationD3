@@ -1,15 +1,15 @@
-.tooltip {	
-    position: fixed;		
+.tooltip {
+    position: fixed;
     width: auto;
-    padding: 2px;				
-    font-size: 10px;	
-    font-family: sans-serif;	
-    background: white;	
-    border-width: 0.1px;	
-    border: 1px solid #C0C0C0;	
+    padding: 2px;
+    font-size: 10px;
+    font-family: sans-serif;
+    background: white;
+    border-width: 0.1px;
+    border: 1px solid #C0C0C0;
     /* border-radius: 5px;			 */
     pointer-events: none;
-    text-align: justify;	
+    text-align: justify;
 }
 
 th, td {
@@ -17,8 +17,22 @@ th, td {
     padding-top: 2px;
     border-bottom: 1px solid #ddd;
     border-left: 1px solid #ddd;
-  }
-p{
+}
+
+p {
     text-align: center;
     font-weight: bold;
+}
+
+/* leyenda */
+
+.legend text {
+    font-size: 0.5em;
+    fill: black;
+    font-family: sans-serif;
+}
+
+.legend circle {
+    stroke: black;
+    stroke-opacity: 0.5;
 }

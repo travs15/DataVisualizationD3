@@ -15,12 +15,17 @@ function creaGrafica() {
     // gamma de colores d3 https://github.com/d3/d3/blob/master/API.md#colors-d3-color
     // const colores = d3.schemeTableau10;
     let departamento = "Amazonas", year = "2008", municipio = "La chorrera";
-    const colores = d3.schemePaired;
+    // const colores = d3.schemeTableau10;
+    // const colores = d3.schemeSet3;
+    const colores = d3.schemeSet2;
+    // const colores = d3.schemePaired;
     console.log(colores);
-    // console.log("svg", d3.select("#graph"));
+    /// array para el dominio de los nombres
     let arrayNombres = data.map(d => d.cultivo);
-    var tamaño = arrayNombres.length;
+    var sizeArray = colores.length;
+    let arrayColLegend = [];
     console.log("arrayNom", arrayNombres);
+    let espaciado = 22;
 
     // console.log("svg", d3.select("#graph"));
     let svg = d3.select("#graph");
@@ -79,7 +84,7 @@ function creaGrafica() {
     }
     var mousemove = function (d) {
         Tooltip
-            .html("<p>"+departamento+" - "+municipio+ " - "+year+"</p>"+
+            .html("<p>" + departamento + " - " + municipio + " - " + year + "</p>" +
                 "<table>" +
                 "<tr><th>Cultivo:</th>" + "<th>" + d.cultivo + "</th></tr>" +
                 "<tr><th>Área Cosechada:</th>" + "<th>" + d.area_cosec + " ha" + "</th></tr>" +
@@ -115,24 +120,29 @@ function creaGrafica() {
     points.merge(pointsEnter) //enter + update
         .attr("cx", d => x(d.area_cosec)) // se devuelve eso en terminos del dominio
         .attr("cy", d => y(d.produccion)) //se devuelve en terminos del dominio
-        .attr("r", d => (d.area_sembr * 0.022))
+        .attr("r", d => {
+            return ((d.area_sembr * 0.022) <= 3) ? 3: d.area_sembr * 0.022;
+        })
+        // .attr("r", d => radius(d.area_sembr)*0.022)
         // .attr("r", 10)
         .attr("stroke", "gray")
         .attr("stroke-width", 1)
         .attr("fill", function (d, i) {
             // console.log("i",i);
-            // console.log("tamaño",tamaño);
+            // console.log("tamaño",sizeArray);
             //retorna un color del arreglo de colores dependiendo del indice de los datos,
             let index;
-            if (i <= tamaño) {
+            if (i < sizeArray) {
                 index = i;
                 // console.log("normal");
+                arrayColLegend.push(colores[index]);
                 return colores[index];
-            } else {
-                index = tamaño - i;
+            } else if (i >= sizeArray) {
+                index = i - sizeArray;
                 index = Math.abs(index);
                 // return d3.color.darker(colores[index]);
                 // console.log("oscuro")
+                arrayColLegend.push(colores[index]);
                 return colores[index];
             }
 
@@ -146,6 +156,44 @@ function creaGrafica() {
 
     g.select(".yaxis")
         .call(d3.axisLeft(y));
+
+    console.log("colLeg", arrayColLegend);
+    //leyenda para cultivos y tamaño de circulos
+    var colorCategory = d3.scaleOrdinal()
+        .domain(arrayNombres)
+        .range(arrayColLegend);
+
+    // creacion de la leyenda ///////
+    ////////////////////////////////
+    // const groups = g.append("g").append("g")
+    const groups = svg.append("g")
+        .selectAll("g")
+        .data(colorCategory.domain());
+    const groupsEnter = groups
+        .enter().append('g')
+        .attr('class', 'legend');
+    groupsEnter
+        .merge(groups)
+        .attr('transform', (d, i) =>
+            `translate(0,${i * espaciado})`
+        );
+    groups.exit().remove();
+
+    groupsEnter.append('circle')
+        .merge(groups.select('circle'))
+        .attr('r', 6)
+        .attr('fill', colorCategory)
+        .attr('cx', width + 160)
+        .attr('cy', height / 2);
+
+    groupsEnter.append('text')
+        .merge(groups.select('text'))
+        .text(d => d)
+        .attr('dy', '0.32em')
+        .attr('x', width + 180)
+        .attr('y', height / 2);
+
+    /////////////////////////////////
 }
 
 cargarDatos();
