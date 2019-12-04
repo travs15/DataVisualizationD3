@@ -22,10 +22,15 @@ function creaGrafica() {
     console.log(colores);
     /// array para el dominio de los nombres
     let arrayNombres = data.map(d => d.cultivo);
+    let arrayAreaSembr = data.map(d => d.area_sembr);
+    //spread operator ...array
+    let maxDataValue = Math.max(...arrayAreaSembr);
     var sizeArray = colores.length;
     let arrayColLegend = [];
-    console.log("arrayNom", arrayNombres);
+    // console.log("arrayNom", arrayNombres);
     let espaciado = 22;
+    let radioMaximo = 30;
+    let legendFill = "gray";
 
     // console.log("svg", d3.select("#graph"));
     let svg = d3.select("#graph");
@@ -63,6 +68,10 @@ function creaGrafica() {
         .range([0, width]);
     var y = d3.scaleLinear()
         .range([height, 0]);
+    // nueva escala para tamaño de circulos usando squareRoot, radio es proporcional a la raiz del area
+    var radius = d3.scaleSqrt()
+        .domain([0, maxDataValue])
+        .range([5, radioMaximo]);
 
     //se establece un dominio tomando como maximo, el maximo de los datos en ese eje
     x.domain([0, d3.max(data, d => d.area_cosec)]).nice();
@@ -120,11 +129,7 @@ function creaGrafica() {
     points.merge(pointsEnter) //enter + update
         .attr("cx", d => x(d.area_cosec)) // se devuelve eso en terminos del dominio
         .attr("cy", d => y(d.produccion)) //se devuelve en terminos del dominio
-        .attr("r", d => {
-            return ((d.area_sembr * 0.022) <= 3) ? 3: d.area_sembr * 0.022;
-        })
-        // .attr("r", d => radius(d.area_sembr)*0.022)
-        // .attr("r", 10)
+        .attr("r", d => radius(d.area_sembr))
         .attr("stroke", "gray")
         .attr("stroke-width", 1)
         .attr("fill", function (d, i) {
@@ -158,20 +163,46 @@ function creaGrafica() {
         .call(d3.axisLeft(y));
 
     console.log("colLeg", arrayColLegend);
-    //leyenda para cultivos y tamaño de circulos
+    //escala para cultivos: categorico
     var colorCategory = d3.scaleOrdinal()
         .domain(arrayNombres)
         .range(arrayColLegend);
 
     // creacion de la leyenda ///////
+    // Tres funciones que cambian el tooltip cuando el mouse hace hover, se mueve, y deja un circulo
+    var mouseoverLegend = function (d) {
+        Tooltip
+            .style("opacity", 1);
+        d3.select(this)
+            .style("stroke", "gray")
+            .style("opacity", 1);
+    }
+    var mousemoveLegend = function (d) {
+        Tooltip
+            .html("<p>" + departamento + " - " + municipio + " - " + year + "</p>")
+            .style("left", (d3.mouse(this)[0] + 70) + "px")
+            .style("top", (d3.mouse(this)[1]) + "px");
+    }
+    var mouseleaveLegend = function (d) {
+        Tooltip
+            .style("opacity", 0);
+        d3.select(this)
+            .attr("stroke", "gray")
+            .attr("stroke-width", 1)
+            .style("opacity", 0.8);
+    }
     ////////////////////////////////
     // const groups = g.append("g").append("g")
     const groups = svg.append("g")
         .selectAll("g")
         .data(colorCategory.domain());
+
     const groupsEnter = groups
         .enter().append('g')
-        .attr('class', 'legend');
+        .attr('class', 'legend')
+        .on("mouseover", mouseoverLegend)
+        .on("mousemove", mousemoveLegend)
+        .on("mouseleave", mouseleaveLegend);
     groupsEnter
         .merge(groups)
         .attr('transform', (d, i) =>
@@ -192,6 +223,44 @@ function creaGrafica() {
         .attr('dy', '0.32em')
         .attr('x', width + 180)
         .attr('y', height / 2);
+
+    /////////////////////////////////
+
+    ////////////////////////////////
+    // console.log(radius.ticks(4));
+    const ticks = radius.ticks(4)
+        .filter(d => d !== 0)
+        .reverse();
+
+    const groups2 = svg.append("g")
+        .selectAll('g').data(ticks);
+
+    const groupsEnter2 = groups2
+        .enter().append('g')
+        .attr('class', 'legendRadius')
+        .on("mouseover", mouseoverLegend)
+        .on("mousemove", mousemoveLegend)
+        .on("mouseleave", mouseleaveLegend);
+    groupsEnter2
+        .merge(groups2)
+        .attr('transform', (d, i) =>
+            `translate(0, ${i * (espaciado * 1.5 + radius(d))})`);
+    groups2.exit().remove();
+
+    groupsEnter2.append('circle')
+        .merge(groups2.select('circle'))
+        .attr('r', d => radius(d))
+        .attr('stroke', 'black')
+        .attr('fill', legendFill)
+        .attr('cx', width + 160)
+        .attr('cy', height / 5);
+
+    groupsEnter2.append('text')
+        .merge(groups2.select('text'))
+        .text(d => d + " ha")
+        .attr('dy', '0.32em')
+        .attr('x', width + 200)
+        .attr('y', height / 5);
 
     /////////////////////////////////
 }

@@ -36,3 +36,14 @@ p {
     stroke: black;
     stroke-opacity: 0.5;
 }
+
+.legendRadius text {
+    font-size: 0.6em;
+    fill: black;
+    font-family: sans-serif;
+}
+
+.legendRadius circle {
+    stroke: black;
+    stroke-opacity: 0.5;
+}
