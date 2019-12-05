@@ -174,21 +174,24 @@ function creaGrafica() {
         Tooltip
             .style("opacity", 1);
         d3.select(this)
-            .style("stroke", "gray")
             .style("opacity", 1);
     }
     var mousemoveLegend = function (d) {
+        let descript = "";
+        if(isNaN(d)){
+            descript = "Color respecto cultivo: "+ d;
+        }else{
+            descript = "Radio de acuerdo al área sembrada: " + d + " ha";
+        }
         Tooltip
-            .html("<p>" + departamento + " - " + municipio + " - " + year + "</p>")
-            .style("left", (d3.mouse(this)[0] + 70) + "px")
-            .style("top", (d3.mouse(this)[1]) + "px");
+            .html("<p>" + descript + "</p>")
+            .style("left",  width + 140 + "px")
+            .style("top",  height / 6 + "px");
     }
     var mouseleaveLegend = function (d) {
         Tooltip
             .style("opacity", 0);
         d3.select(this)
-            .attr("stroke", "gray")
-            .attr("stroke-width", 1)
             .style("opacity", 0.8);
     }
     ////////////////////////////////
