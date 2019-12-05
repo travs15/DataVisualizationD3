@@ -179,13 +179,13 @@ function creaGrafica() {
     var mousemoveLegend = function (d) {
         let descript = "";
         if(isNaN(d)){
-            descript = "Color respecto cultivo: "+ d;
+            descript = "Color respecto a cultivo: "+ d;
         }else{
-            descript = "Radio de acuerdo al área sembrada: " + d + " ha";
+            descript = "Representación de acuerdo al área sembrada: " + d + " ha";
         }
         Tooltip
             .html("<p>" + descript + "</p>")
-            .style("left",  width + 140 + "px")
+            .style("left",  width + 120 + "px")
             .style("top",  height / 6 + "px");
     }
     var mouseleaveLegend = function (d) {
