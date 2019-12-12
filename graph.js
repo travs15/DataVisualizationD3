@@ -73,6 +73,11 @@ function creaGrafica() {
         .domain([0, maxDataValue])
         .range([5, radioMaximo]);
 
+    //escala para cultivos: categorico
+    var colorCategory = d3.scaleOrdinal()
+        .domain(arrayNombres)
+        .range(colores);
+
     //se establece un dominio tomando como maximo, el maximo de los datos en ese eje
     x.domain([0, d3.max(data, d => d.area_cosec)]).nice();
     y.domain([0, d3.max(data, d => d.produccion)]).nice();
@@ -101,8 +106,11 @@ function creaGrafica() {
                 "<tr><th>Rendimiento:</th>" + "<th>" + d.rendimiento + " t/ha" + "</th></tr>" +
                 "<tr><th>Área Sembrada:</th>" + "<th>" + d.area_sembr + " ha" + "</th></tr>" +
                 "</table>")
-            .style("left", (d3.mouse(this)[0] + 70) + "px")
-            .style("top", (d3.mouse(this)[1]) + "px");
+            // .style("left", (d3.mouse(this)[0] + 70) + "px")
+            // .style("top", (d3.mouse(this)[1]) + "px")
+            .style("top", `${d3.event.y}px`)
+            .style("left", `${d3.event.x}px`);
+        console.log("evento", d3.event);
     }
     var mouseleave = function (d) {
         Tooltip
@@ -132,41 +140,20 @@ function creaGrafica() {
         .attr("r", d => radius(d.area_sembr))
         .attr("stroke", "gray")
         .attr("stroke-width", 1)
-        .attr("fill", function (d, i) {
-            // console.log("i",i);
-            // console.log("tamaño",sizeArray);
-            //retorna un color del arreglo de colores dependiendo del indice de los datos,
-            let index;
-            if (i < sizeArray) {
-                index = i;
-                // console.log("normal");
-                arrayColLegend.push(colores[index]);
-                return colores[index];
-            } else if (i >= sizeArray) {
-                index = i - sizeArray;
-                index = Math.abs(index);
-                // return d3.color.darker(colores[index]);
-                // console.log("oscuro")
-                arrayColLegend.push(colores[index]);
-                return colores[index];
-            }
-
-        });
+        .attr("fill", d => colorCategory(d.cultivo));
 
     points.exit().remove();
 
     g.select(".xaxis")
         .call(d3.axisBottom(x))//sale arriba de la grafica
-        .attr("transform", "translate(0," + height + ")");//se pasa abajo de acuerdo al alto
+        .attr("transform", "translate(0," + height + ")")//se pasa abajo de acuerdo al alto
+        .selectAll("text")
+        .attr('transform', `translate(0,0) rotate(-12)`);
 
     g.select(".yaxis")
-        .call(d3.axisLeft(y));
-
-    console.log("colLeg", arrayColLegend);
-    //escala para cultivos: categorico
-    var colorCategory = d3.scaleOrdinal()
-        .domain(arrayNombres)
-        .range(arrayColLegend);
+        .call(d3.axisLeft(y))
+        .selectAll("text")
+        .attr('transform', `translate(0,0) rotate(-12)`);
 
     // creacion de la leyenda ///////
     // Tres funciones que cambian el tooltip cuando el mouse hace hover, se mueve, y deja un circulo
@@ -178,15 +165,15 @@ function creaGrafica() {
     }
     var mousemoveLegend = function (d) {
         let descript = "";
-        if(isNaN(d)){
-            descript = "Color respecto a cultivo: "+ d;
-        }else{
+        if (isNaN(d)) {
+            descript = "Color respecto a cultivo: " + d;
+        } else {
             descript = "Representación de acuerdo al área sembrada: " + d + " ha";
         }
         Tooltip
             .html("<p>" + descript + "</p>")
-            .style("left",  width + 120 + "px")
-            .style("top",  height / 6 + "px");
+            .style("left", width + 120 + "px")
+            .style("top", height / 6 + "px");
     }
     var mouseleaveLegend = function (d) {
         Tooltip
